@@ -3,9 +3,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-#Spezielle Log-Datei
-cron_log.txt
-
 # Log-Dateien (Deine QNAP schreibt die Logs, die brauchen wir nicht im Code)
 *.log
 cron_log.txt
