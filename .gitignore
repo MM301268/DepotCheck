@@ -1,0 +1,18 @@
+# Python Müll
+__pycache__/
+*.py[cod]
+*$py.class
+
+#Spezielle Log-Datei
+cron_log.txt
+
+# Log-Dateien (Deine QNAP schreibt die Logs, die brauchen wir nicht im Code)
+*.log
+cron_log.txt
+
+# Passwörter und Secrets (WICHTIG!)
+.env
+
+# Betriebssystem-Reste
+Thumbs.db
+.DS_Store

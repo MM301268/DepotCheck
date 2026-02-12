@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  depot-checker:
+    image: python:3.11-slim-bookworm
+    container_name: depot_checker_app
+    volumes:
+      - .:/app
+    working_dir: /app
+    environment:
+      - TZ=Europe/Berlin
+    # Hält den Container am Leben, damit wir per SSH rein können
+    command: tail -f /dev/null
+    restart: unless-stopped
+    # Falls dein MariaDB auf der QNAP läuft, erlaubt dies den Zugriff via Host-IP
+    network_mode: bridge
