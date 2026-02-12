@@ -1,4 +1,6 @@
+import logging
 import yfinance as yf
+from log_modul import define_logger
 from datetime import datetime
 from orders_model import getYahooSymbols
 from orders_model import getETFID_byYahooSymbol
@@ -15,10 +17,12 @@ class orders:
 
 queryPeriod: Final[str] = "1d"
 
+# Initialisierung
+logger: logging.Logger
+    
 def get_depot_update():
     # Programm Start in Logfile schreiben
-    aktTime = datetime.now().strftime('%d.%m.%Y | %H:%M')
-    print(f"{aktTime} --- DEPOT-UPDATE-START:  ---")
+    logger.debug(f"--- DEPOT-UPDATE-START: ---")
     # Alle Yahoo-Symbole aus der Datenbank abrufen 
     tickers_Yahoo = getYahooSymbols()
     # Prfit/Loss für jedes Yahoo-Symbol initialisieren
@@ -37,19 +41,22 @@ def get_depot_update():
         if etfID != -1:
             writeData(etfID,datetime.now(), curPrice, symbol, datetime.now())
         else:
-            print(f"{aktTime} - ETF-ID für Symbol '{symbol}' konnte nicht abgerufen werden.")
+            logger.warning(f"ETF-ID für Symbol '{symbol}' konnte nicht abgerufen werden.")
         # Profit/Loss für die ETF-ID berechnen und Details abrufen
         profitLoss = getProfitLoss(etfID)
         # Hole Zusatzdetails zum ETF, um sie in der Ausgabe anzuzeigen
         etfDetails = getETF_Details_byID(etfID)
         # Ausgabe des Profit/Loss mit ETF-Details, falls verfügbar
         if etfDetails is not None:
-            print(f"{aktTime} - Gewinn/Verslust für ETF-ID: {etfID} Yahoo-Symbol: '{symbol}' Name: {etfDetails.name:<17} Isin: {etfDetails.isin} Betrag: {profitLoss:.2f} €")
+            logger.debug(f"Gewinn/Verslust für ETF-ID: {etfID} Yahoo-Symbol: '{symbol}' Name: {etfDetails.name:<17} Isin: {etfDetails.isin} Betrag: {profitLoss:.2f} €")
             TotalProfitLoss += profitLoss
         else:
-            print(f"{aktTime} - ETF-Details für ETF-ID {etfID} konnten nicht abgerufen werden.")
+            logger.warning(f"ETF-Details für ETF-ID {etfID} konnten nicht abgerufen werden.")
     # Gesamtprofit/-verlust ausgeben
-    print(f"{aktTime} - Total Profit/Loss: {TotalProfitLoss:.2f} €")
-    print(f"{aktTime} --- DEPOT-UPDATE-END:  ---")
+    aktTime = datetime.now().strftime('%d.%m.%Y | %H:%M')
+    logger.debug(f"Total Profit/Loss: {TotalProfitLoss:.2f} €")
+    logger.debug(f"--- DEPOT-UPDATE-END:  ---")
+
 if __name__ == "__main__":
+    logger = define_logger("depotcheck", __name__)
     get_depot_update()
